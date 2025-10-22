@@ -1,5 +1,6 @@
 ﻿namespace WpfAutoGrid
 {
+    using System;
     using System.ComponentModel;
     using System.Linq;
     using System.Windows;
@@ -141,7 +142,7 @@
             if ((int)e.NewValue < 0)
                 return;
 
-            var grid = d as AutoGrid;
+            var grid = (AutoGrid)d;
 
             // look for an existing column definition for the height
             var width = GridLength.Auto;
@@ -160,13 +161,14 @@
         /// </summary>
         public static void ColumnsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if ((string)e.NewValue == string.Empty)
+            var newValue = (string)e.NewValue;
+            if (string.IsNullOrEmpty(newValue))
                 return;
 
-            var grid = d as AutoGrid;
+            var grid = (AutoGrid)d;
             grid.ColumnDefinitions.Clear();
 
-            var defs = Parse((string)e.NewValue);
+            var defs = Parse(newValue);
             foreach (var def in defs)
                 grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = def });
         }
@@ -176,7 +178,7 @@
         /// </summary>
         public static void FixedColumnWidthChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var grid = d as AutoGrid;
+            var grid = (AutoGrid)d;
 
             // add a default column if missing
             if (grid.ColumnDefinitions.Count == 0)
@@ -192,7 +194,7 @@
         /// </summary>
         public static void FixedRowHeightChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var grid = d as AutoGrid;
+            var grid = (AutoGrid)d;
 
             // add a default row if missing
             if (grid.RowDefinitions.Count == 0)
@@ -212,7 +214,7 @@
             var definitions = new GridLength[tokens.Length];
             for (var i = 0; i < tokens.Length; i++)
             {
-                var str = tokens[i];
+                var str = tokens[i].Trim();
                 double value;
 
                 // ratio
@@ -246,7 +248,7 @@
             if ((int)e.NewValue < 0)
                 return;
 
-            var grid = d as AutoGrid;
+            var grid = (AutoGrid)d;
 
             // look for an existing row to get the height
             var height = GridLength.Auto;
@@ -265,13 +267,14 @@
         /// </summary>
         public static void RowsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if ((string)e.NewValue == string.Empty)
+            var newValue = (string)e.NewValue;
+            if (string.IsNullOrEmpty(newValue))
                 return;
 
-            var grid = d as AutoGrid;
+            var grid = (AutoGrid)d;
             grid.RowDefinitions.Clear();
 
-            var defs = Parse((string)e.NewValue);
+            var defs = Parse(newValue);
             foreach (var def in defs)
                 grid.RowDefinitions.Add(new RowDefinition() { Height = def });
         }
@@ -281,7 +284,7 @@
         /// </summary>
         private static void OnChildHorizontalAlignmentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var grid = d as AutoGrid;
+            var grid = (AutoGrid)d;
             foreach (UIElement child in grid.Children)
             {
                 if (grid.ChildHorizontalAlignment.HasValue)
@@ -296,7 +299,7 @@
         /// </summary>
         private static void OnChildMarginChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var grid = d as AutoGrid;
+            var grid = (AutoGrid)d;
             foreach (UIElement child in grid.Children)
             {
                 if (grid.ChildMargin.HasValue)
@@ -311,7 +314,7 @@
         /// </summary>
         private static void OnChildVerticalAlignmentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var grid = d as AutoGrid;
+            var grid = (AutoGrid)d;
             foreach (UIElement child in grid.Children)
             {
                 if (grid.ChildVerticalAlignment.HasValue)
@@ -319,14 +322,6 @@
                 else
                     child.SetValue(FrameworkElement.VerticalAlignmentProperty, DependencyProperty.UnsetValue);
             }
-        }
-
-        /// <summary>
-        /// Handled the redraw properties changed event
-        /// </summary>
-        private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            
         }
 
         /// <summary>
@@ -351,9 +346,9 @@
         /// <summary>
         /// Clamp a value to its maximum.
         /// </summary>
-        private int Clamp(int value, int max)
+        private static int Clamp(int value, int max)
         {
-            return (value > max) ? max : value;
+            return Math.Min(value, max);
         }
 
         /// <summary>
