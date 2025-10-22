@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup Condition="
+    '$(MSBuildProjectExtension)'=='.csproj' and
+    '$(TargetFrameworkVersion)'!='' and
+    '$(TargetFramework)'==''
+  ">
+    <RestoreProjectStyle>PackagesConfig</RestoreProjectStyle>
+    <!-- На случай CPM -->
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>
